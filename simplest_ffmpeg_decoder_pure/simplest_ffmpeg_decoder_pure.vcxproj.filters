@@ -19,4 +19,7 @@
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="simplest_ffmpeg_decoder_pure.cpp.new" />
+  </ItemGroup>
 </Project>

@@ -52,6 +52,13 @@ extern "C"
 
 int main(int argc, char* argv[])
 {
+	char *filepath = "Titanic.mkv";
+
+	if(argc == 2)
+	{
+		filepath = argv[1];
+	}
+
 	AVFormatContext	*pFormatCtx;
 	int				i, videoindex;
 	AVCodecContext	*pCodecCtx;
@@ -62,8 +69,6 @@ int main(int argc, char* argv[])
 	int y_size;
 	int ret, got_picture;
 	struct SwsContext *img_convert_ctx;
-
-	char filepath[]="Titanic.mkv";
 
 	FILE *fp_yuv=fopen("output.yuv","wb+");  
 
@@ -107,10 +112,9 @@ int main(int argc, char* argv[])
 	out_buffer=(unsigned char *)av_malloc(av_image_get_buffer_size(AV_PIX_FMT_YUV420P,  pCodecCtx->width, pCodecCtx->height,1));
 	av_image_fill_arrays(pFrameYUV->data, pFrameYUV->linesize,out_buffer,
 		AV_PIX_FMT_YUV420P,pCodecCtx->width, pCodecCtx->height,1);
-
-	
-	
+		
 	packet=(AVPacket *)av_malloc(sizeof(AVPacket));
+
 	//Output Info-----------------------------
 	printf("--------------- File Information ----------------\n");
 	av_dump_format(pFormatCtx,0,filepath,0);
@@ -130,6 +134,7 @@ int main(int argc, char* argv[])
 					pFrameYUV->data, pFrameYUV->linesize);
 
 				y_size=pCodecCtx->width*pCodecCtx->height;  
+
 				fwrite(pFrameYUV->data[0],1,y_size,fp_yuv);    //Y 
 				fwrite(pFrameYUV->data[1],1,y_size/4,fp_yuv);  //U
 				fwrite(pFrameYUV->data[2],1,y_size/4,fp_yuv);  //V
@@ -137,7 +142,7 @@ int main(int argc, char* argv[])
 
 			}
 		}
-		av_free_packet(packet);
+		av_packet_unref(packet);
 	}
 	//flush decoder
 	//FIX: Flush Frames remained in Codec
